@@ -14,8 +14,6 @@ services:
       - "82:3000"
     links:
        - api
-    environment:
-       - API_URL=http://api.promotions.com
     extra_hosts:
       - "api.promotions.com:${IP_PREFIX}.3"
   api:
