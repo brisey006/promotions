@@ -1,0 +1,15 @@
+version: '3'
+services: 
+  frontend:
+    container_name: promodash
+    restart: always
+    build: .
+    volumes: 
+      - node_modules:/usr/src/app/node_modules
+    networks:
+      - net
+networks: 
+  net:
+    driver: bridge
+volumes:
+  node_modules:
