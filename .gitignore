@@ -1,3 +1,1 @@
-node_modules
-api/.env
-api/public/uploads
+.env

@@ -9,7 +9,7 @@ services:
       - front_modules:/usr/src/app/node_modules
     networks:
       net:
-        ipv4_address: 172.18.0.2  
+        ipv4_address: ${IP_PREFIX}.2  
     ports:
       - "82:3000"
     links:
@@ -17,7 +17,7 @@ services:
     environment:
        - API_URL=http://api.promotions.com
     extra_hosts:
-      - "api.promotions.com:172.18.0.3"
+      - "api.promotions.com:${IP_PREFIX}.3"
   api:
     container_name: promotions
     restart: always
@@ -33,7 +33,7 @@ services:
       - node_modules:/usr/src/app/node_modules
     networks:
       net:
-        ipv4_address: 172.18.0.3
+        ipv4_address: ${IP_PREFIX}.3
   promotions_mongo:
     container_name: promotions_mongo
     image: mongo
@@ -41,7 +41,7 @@ services:
       - db:/data/db
     networks: 
       net:
-        ipv4_address: 172.18.0.4
+        ipv4_address: ${IP_PREFIX}.4
     ports:
       - '27017'
 networks: 
@@ -49,7 +49,7 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: "172.18.0.0/16"
+        - subnet: ${IP_PREFIX}.0/16
 volumes: 
   db:
   store:
