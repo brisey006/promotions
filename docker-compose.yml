@@ -1,0 +1,57 @@
+version: '3'
+services:
+  frontend:
+    container_name: promodash
+    restart: always
+    build:
+      context: ./dashboard
+    volumes:
+      - front_modules:/usr/src/app/node_modules
+    networks:
+      net:
+        ipv4_address: 172.18.0.2  
+    ports:
+      - "82:3000"
+    links:
+       - api
+    environment:
+       - API_URL=http://api.promotions.com
+    extra_hosts:
+      - "api.promotions.com:172.18.0.3"
+  api:
+    container_name: promotions
+    restart: always
+    build: 
+      context: ./api
+    links: 
+      - promotions_mongo
+    environment: 
+      - DB_PATH=promotions_mongo
+      - PORT=80
+    volumes: 
+      - store:/usr/src/app/public/uploads
+      - node_modules:/usr/src/app/node_modules
+    networks:
+      net:
+        ipv4_address: 172.18.0.3
+  promotions_mongo:
+    container_name: promotions_mongo
+    image: mongo
+    volumes: 
+      - db:/data/db
+    networks: 
+      net:
+        ipv4_address: 172.18.0.4
+    ports:
+      - '27017'
+networks: 
+  net:
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.18.0.0/16"
+volumes: 
+  db:
+  store:
+  node_modules:
+  front_modules:
