@@ -46,6 +46,8 @@ const actions = {
                     if (e.response.status == 403) {
                         commit('setUser', null);
                     }
+                } else {
+                    commit('setErrors', { message: JSON.stringify(['An API seems down. Please check with the site administrator!']) });
                 }
             }
         }
@@ -81,7 +83,11 @@ const mutations = {
         state.errors = [];
     },
     setErrors: (state, errors) => {
-        state.errors = JSON.parse(errors.message);
+        try {
+            state.errors = JSON.parse(errors.message);
+        } catch (e) {
+            state.errors = [e.message];
+        }
     },
     setChangePasswordStatus: (state, data) => state.changePasswordStatus = data,
     setLoginLoading: (state, data) => state.loginLoading = data,
