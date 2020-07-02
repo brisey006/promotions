@@ -2,7 +2,7 @@
     <div class="page-inner">
         <!-- Breadcrumb Start -->
         <!--================================-->
-        <div class="pageheader pd-t-25 pd-b-15">
+        <div v-if="profile" class="pageheader pd-t-25 pd-b-15">
             <div class="d-flex justify-content-between">
                 <div class="clearfix">
                     <div class="pd-t-5 pd-b-5">
@@ -10,7 +10,7 @@
                     </div>
                     <div class="breadcrumb pd-0 mg-0">
                         <nuxt-link to="/" class="breadcrumb-item"><i class="icon ion-ios-home-outline"></i>Dashboard</nuxt-link>
-                        <nuxt-link to="/users" class="breadcrumb-item">Users</nuxt-link>
+                        <nuxt-link v-if="profile._id !== user._id" to="/users" class="breadcrumb-item">Users</nuxt-link>
                         <span class="breadcrumb-item active" v-if="profile">{{profile.fullName}}</span>
                     </div>
                 </div>
@@ -20,8 +20,7 @@
         <!--================================-->
         <div class="row clearfix" v-if="profile">
             <user-side-nav />
-            <user-main />
-            <user-right-nav />           
+            <user-main />        
         </div>
     </div>
 </template>
@@ -29,14 +28,12 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import UserSideNav from '@/components/Users/UserSideNav';
-import UserRightNav from '@/components/Users/UserRightNav';
 import UserMain from '@/components/Users/UserMain';
 import { PlusIcon } from 'vue-feather-icons';
 
 export default {
     components: {
         UserSideNav,
-        UserRightNav,
         UserMain,
         PlusIcon
     },

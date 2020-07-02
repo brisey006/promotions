@@ -1,5 +1,5 @@
 <template>
-  <div class="col-md-6 col-lg-6 col-xl-8">
+  <div class="col-md-6 col-lg-9 col-xl-9">
       <div class="card mg-b-30">
         <div class="card-header d-flex align-items-center justify-content-between">
             <h6 class="tx-13 mb-0">Main</h6>

@@ -4,23 +4,32 @@ const state = () => ({
     changePasswordStatus: {
         loading: false
     },
+    loginLoading: false
 });
 
 const getters = {
     getUser: (state) => state.user,
     getErrors: (state) => state.errors,
+    getLoginLoading: (state) => state.loginLoading,
     getChangePasswordStatus: (state) => state.changePasswordStatus
 };
 
 const actions = {
     async loginUser ({ commit }, payload) {
+        commit('setLoginLoading', true);
         try {
             const user = await this.$axios.$post('/login', payload);
             const Cookies = process.client ? require('js-cookie') : undefined;
             Cookies.set('token', user.token);
+            commit('setLoginLoading', false);
             commit('setUser', user);
         } catch (e) {
-            commit('setErrors', e.response.data);
+            commit('setLoginLoading', false);
+            if (e.message == 'Network Error') {
+                commit('setErrors', { message: JSON.stringify(['A network error occured. Please try again later!']) });
+            } else {
+                commit('setErrors', e.response.data);
+            }
         }
     },
     async loginUserWithToken ({ commit }, p) {
@@ -29,8 +38,13 @@ const actions = {
             this.$axios.setToken(user.token, 'Bearer');
             commit('setUser', user);
         } catch (e) {
-            if (e.response.status == 403) {
+            if (e.errno == 'ENOTFOUND') {
                 commit('setUser', null);
+                commit('setErrors', { message: JSON.stringify(['An API seems down. Please check with the site administrator!']) });
+            } else {
+                if (e.response.status == 403) {
+                    commit('setUser', null);
+                }
             }
         }
     },
@@ -68,6 +82,7 @@ const mutations = {
         state.errors = JSON.parse(errors.message);
     },
     setChangePasswordStatus: (state, data) => state.changePasswordStatus = data,
+    setLoginLoading: (state, data) => state.loginLoading = data,
 };
 
 export default {

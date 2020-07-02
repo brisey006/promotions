@@ -1,3 +1,4 @@
+require('dotenv').config();
 
 export default {
   mode: 'universal',
@@ -56,6 +57,7 @@ export default {
   ** Nuxt.js dev-modules
   */
   buildModules: [
+    '@nuxtjs/dotenv'
   ],
   /*
   ** Nuxt.js modules
@@ -84,7 +86,7 @@ export default {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
-    baseURL: 'http://<baseurl>/api',
+    baseURL: `${process.env.PROMOTIONS_API_URL}/api`,
   },
   /*
   ** Build configuration

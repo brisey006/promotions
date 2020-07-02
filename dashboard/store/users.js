@@ -13,6 +13,9 @@ const state = () => ({
     cropImageStatus: {
         loading: false
     },
+    changeUserRoleStatus: {
+        loading: false
+    },
     pagination: null
 });
 
@@ -24,6 +27,7 @@ const getters = {
     getAddUserStatus: (state) => state.addUserStatus,
     getEditUserStatus: (state) => state.editUserStatus,
     getCropImageStatus: (state) => state.cropImageStatus,
+    getChangeUserRoleStatus: (state) => state.changeUserRoleStatus,
     getPagination: (state) => state.pagination,
 };
 
@@ -109,7 +113,18 @@ const actions = {
         } catch (e) {
             dispatch('general/handleRequestError', e, { root: true });
         }
-    }
+    },
+    async changeUserRole ({ commit, dispatch, state }, payload) {
+        try {
+            commit('setChangeUserRoleStatus', { loading: true, data: undefined });
+            const result = await this.$axios.$put(`/users/${state.profile._id}/settings/change-role`, payload);
+            commit('setChangeUserRoleStatus', { loading: false, data: result });
+            dispatch('general/handleUpdated', { ...result, title: result.fullName }, { root: true });
+        } catch (e) {
+            commit('setChangeUserRoleStatus', { loading: false, data: undefined });
+            dispatch('general/handleRequestError', e, { root: true });
+        }
+    },
 };
 
 const mutations = {
@@ -133,6 +148,7 @@ const mutations = {
     setAddUserStatus: (state, data) => state.addUserStatus = data,
     setEditUserStatus: (state, data) => state.editUserStatus = data,
     setCropImageStatus: (state, data) => state.cropImageStatus = data,
+    setChangeUserRoleStatus: (state, data) => state.changeUserRoleStatus = data,
 };
 
 export default {

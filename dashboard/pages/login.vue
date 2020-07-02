@@ -16,13 +16,16 @@
             <div class="alert alert-danger" role="alert" v-for="error in errors" :key="error">
               {{error}}
             </div>
-            
             <div class="form-group mb-0">
-                <button class="btn btn-brand btn-block" @click="setAuthData">Sign In</button>
+              <button v-if="loginLoading" class="btn btn-brand btn-block" disabled>
+                  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                  Signing in...
+                </button>
+                <button v-else class="btn btn-brand btn-block" @click="setAuthData">Sign In</button>
             </div>
           </div>
           <!-- /Form -->
-          <div class="tx-gray-500 mg-t-10">Forgot Password? <a href="aut-signin.html" class="tx-semibold">Reset</a></div>
+          <div class="tx-gray-500 mg-t-10">Forgot Password? <a href="#" class="tx-semibold">Reset</a></div>
       </div>
   </div>
 </template>
@@ -40,7 +43,8 @@ export default {
     },
     computed: mapGetters({
       errors: 'auth/getErrors',
-      user: 'auth/getUser'
+      user: 'auth/getUser',
+      loginLoading: 'auth/getLoginLoading'
     }),
     methods: {
       ...mapActions({

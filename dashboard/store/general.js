@@ -1,5 +1,5 @@
 const state = () => ({
-    apiHost: 'http://<baseapiurl>',
+    apiHost: process.env.PROMOTIONS_API_URL,
     userRoles: null,
     errors: undefined,
     deletedItem: undefined,
@@ -30,7 +30,10 @@ const actions = {
     async handleRequestError ({ commit }, error) {
         if (error.response != undefined) {
             if (error.response.status == 403) {
-                //commit('auth/setUser', null, { root: true });
+                commit('auth/setUser', {}, { root: true });
+                commit('setErrors', error.response.data);
+            }
+            if (error.response.status == 401) {
                 commit('setErrors', error.response.data);
             }
             if (error.response.status == 406) {

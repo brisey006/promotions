@@ -1,5 +1,5 @@
 <template>
-  <div class="col-md-6 col-lg-3 col-xl-2">
+  <div class="col-md-6 col-lg-3 col-xl-3">
     <div class="card mg-b-30">
       <div @click="counter()" style="cursor: pointer" class="card-header d-flex align-items-center justify-content-between">
         <h6 class="tx-13 mb-0">User Details</h6>
@@ -62,6 +62,49 @@
         </ul>
       </div>
     </div>
+
+    <div v-if="user._id != profile._id" class="card mg-b-30">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <h6 class="tx-13 mb-0">Change User Role</h6>
+        </div>
+        <div class="card-body">
+            <ul class="list-unstyled mb-0">
+                <li class="d-flex align-items-center mg-b-15">
+                    <div class="media-body lh-2">
+                        <client-only>
+                            <v-select name="userType" label="key" :reduce="d => d.value" :options="userTypeOptions" v-model="userType" placeholder="Select User Type"></v-select>
+                        </client-only>
+                    </div>
+                </li>
+            </ul>
+            <button @click="saveNewRole()" class="btn btn-primary">Change</button>
+        </div>
+    </div>
+    <div v-if="user._id == profile._id" class="card mg-b-30">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <h6 class="tx-13 mb-0">Change Password</h6>
+        </div>
+        <div class="card-body">
+            <ul class="list-unstyled mb-0">
+                <li class="d-flex align-items-center mg-b-15">
+                    <div class="media-body lh-2">
+                    <input class="form-control form-control-sm" v-model="currentPassword" name="currentPassword" placeholder="Old Password" type="password">
+                    </div>
+                </li>
+                <li class="d-flex align-items-center mg-b-15">
+                    <div class="media-body lh-2">
+                    <input class="form-control form-control-sm" v-model="password" name="password" placeholder="New Password" type="password">
+                    </div>
+                </li>
+                <li class="d-flex align-items-center mg-b-15">
+                    <div class="media-body lh-2">
+                    <input class="form-control form-control-sm" v-model="confirmation" name="confirmation" placeholder="Verify Password" type="password">
+                    </div>
+                </li>
+            </ul>
+            <button @click="changeUserPassword()" class="btn btn-primary">Change</button>
+        </div>
+    </div>
   </div>
 </template>
 
@@ -83,13 +126,26 @@ export default {
     apiHost: 'general/apiHost',
     imageKeys: 'image-settings/getKeys',
     user: 'auth/getUser',
-    userRoles: 'general/getUserRoles'
+    userRoles: 'general/getUserRoles',
+    changePasswordStatus: 'auth/getChangePasswordStatus',
+    changeUserRoleStatus: 'users/getChangeUserRoleStatus',
   }),
+  watch: {
+        changePasswordStatus (val, old) {
+            if (val.data != undefined) {
+                this.currentPassword = '';
+                this.password = '';
+                this.confirmation = '';
+            }
+        }
+    },
   methods: {
     ...mapActions({
       fetchImageSetting: 'image-settings/fetchImageSetting',
       cropImage: 'users/cropImage',
-      getDeletionKey: 'users/getDeletionKey'
+      getDeletionKey: 'users/getDeletionKey',
+      changePassword: 'auth/changePassword',
+      changeUserRole: 'users/changeUserRole',
     }),
     loadImageSetting() {
       this.fetchImageSetting(this.imageKeys.USERS.key);
@@ -103,13 +159,38 @@ export default {
         }
         this.count = 0;
       }
-      
+    },
+    changeUserPassword() {
+        const { currentPassword, password, confirmation } = this;
+        this.changePassword({ currentPassword, password, confirmation });
+    },
+    saveNewRole() {
+        const { userType } = this;
+        this.changeUserRole({ userType });
     }
   },
   data() {
     return {
-      count: 0
+      count: 0,
+      currentPassword: '',
+      password: '',
+      confirmation: '',
+      userType: '',
+      userTypeOptions: []
     }
-  }
+  },
+  mounted() {
+        let options = [];
+        if (this.userRoles != null) {
+            Object.keys(this.userRoles).forEach(key => {
+                options.push({
+                    key: key.indexOf('_') > -1 ? key.replace('_', ' ') : key,
+                    value: this.userRoles[key]
+                });
+            });
+        }
+        this.userTypeOptions = options;
+        this.userType = options.find(e => e.value == this.profile.userType);
+    }
 };
 </script>
