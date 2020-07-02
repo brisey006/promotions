@@ -1,4 +1,3 @@
-import moment from 'moment';
 import paginate from '../static/js/paginate';
 
 const state = () => ({
@@ -42,7 +41,17 @@ const actions = {
                 if (response.docs.length == 0 && response.totalDocs > 0) {
                     response = await this.$axios.$get(`/promotions?limit=${payload.limit}&page=1`);
                 }
-                commit('setPromotions', response);
+                const docs = [];
+                let count = response.limit * (response.page -1);
+                response.docs.forEach(promotion => {
+                    count += 1;
+                    const created = this.$moment(promotion.createdAt).format("Do MMM YY");
+                    const updated = this.$moment(promotion.updatedAt).format("Do MMM YY");
+                    const expiryDate = this.$moment(promotion.expiry).format("Do MMM YY");
+                    const promotionData = { ...promotion, index: count, created, updated, expiryDate };
+                    docs.push(promotionData);
+                });
+                commit('setPromotions', docs);
                 delete response.docs;
                 commit('setPagination', response);
             }
@@ -106,20 +115,7 @@ const actions = {
 };
 
 const mutations = {
-    setPromotions: (state, data) => {
-        const promotions = data.docs;
-        const docs = [];
-        let count = data.limit * (data.page -1);
-        promotions.forEach(promotion => {
-            count += 1;
-            const created = moment(promotion.createdAt).format("Do MMM YY");
-            const updated = moment(promotion.updatedAt).format("Do MMM YY");
-            const expiryDate = moment(promotion.expiry).format("Do MMM YY");
-            const promotionData = { ...promotion, index: count, created, updated, expiryDate };
-            docs.push(promotionData);
-        });
-        state.promotions = docs;
-    },
+    setPromotions: (state, data) => state.promotions = data,
     setPromotion: (state, data) => state.promotion = data,
     setPagination: (state, pagination) => {
         state.pagination = paginate(pagination);

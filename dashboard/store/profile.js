@@ -1,5 +1,3 @@
-import moment from 'moment';
-
 const state = () => ({
     data: undefined
 });
@@ -22,7 +20,8 @@ const actions = {
             const response = await this.$axios.$put('/users/'+ payload.id, payload.data);
             if (response.nModified == 1) {
                 const data = await this.$axios.$get('/users/'+ payload.id);
-                commit('setProfile', data);
+                const dateString = this.$moment(data.dateOfBirth).format("Do MMM YY");
+                commit('setProfile', { ...data, dateString });
             }
         } catch (e) {
             dispatch('general/handleRequestError', e, { root: true });
@@ -31,10 +30,7 @@ const actions = {
 };
 
 const mutations = {
-    setProfile: (state, data) => {
-        const dateString = moment(data.dateOfBirth).format("Do MMM YY");
-        state.data = { ...data, dateString };
-    }
+    setProfile: (state, data) => state.data = data
 };
 
 export default {

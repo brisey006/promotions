@@ -83,6 +83,7 @@ const mutations = {
         state.errors = [];
     },
     setErrors: (state, errors) => {
+        console.log(errors);
         try {
             state.errors = JSON.parse(errors.message);
         } catch (e) {

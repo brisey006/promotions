@@ -1,4 +1,3 @@
-import moment from 'moment';
 import paginate from '../static/js/paginate';
 
 const state = () => ({
@@ -32,7 +31,16 @@ const actions = {
             if (response.docs.length == 0 && response.totalDocs > 0) {
                 response = await this.$axios.$get(`/sellers?limit=${payload.limit}&page=1`);
             }
-            commit('setPages', response);
+            const docs = [];
+            let count = response.limit * (response.page -1);
+            response.docs.forEach(page => {
+                count += 1;
+                const created = this.$moment(page.createdAt).format("Do MMM YY");
+                const updated = this.$moment(page.updatedAt).format("Do MMM YY");
+                const userPage = { ...page, index: count, created, updated };
+                docs.push(userPage);
+            });
+            commit('setPages', docs);
             delete response.docs;
             commit('setPagination', response);
         } catch (e) {
@@ -72,19 +80,7 @@ const actions = {
 };
 
 const mutations = {
-    setPages: (state, pages) => {
-        const data = pages;
-        const docs = [];
-        let count = data.limit * (data.page -1);
-        data.docs.forEach(page => {
-            count += 1;
-            const created = moment(page.createdAt).format("Do MMM YY");
-            const updated = moment(page.updatedAt).format("Do MMM YY");
-            const userPage = { ...page, index: count, created, updated };
-            docs.push(userPage);
-        });
-        state.pages = docs;
-    },
+    setPages: (state, pages) => state.pages = pages,
     setPagination: (state, pagination) => {
         state.pagination = paginate(pagination);
     },

@@ -5,7 +5,7 @@
         <h6 class="tx-13 mb-0">Promotion Details</h6>
         <div class="card-header-btn">
             <a @click="refreshTagsInput()" href="#promotionEditModal" data-toggle="modal" class="btn btn-default btn-sm">Edit</a>
-            <edit-promotion modalId='promotionEditModal' :promotion="promotion" />
+            <edit-promotion modalId='promotionEditModal' tagsInputId='promotionTagsEdit' :promotion="promotion" />
         </div>
       </div>
       <div class="card-body">
@@ -85,10 +85,10 @@ export default {
       this.fetchImageSetting(this.imageKeys.PROMOTIONS.key);
     },
     refreshTagsInput() {
-        $("#editPromoTags").tagsinput('refresh');
+        $("#promotionTagsEdit").tagsinput('refresh');
         const tags = this.promotion.tags;
         tags.forEach(tag => {
-            $("#editPromoTags").tagsinput('add', tag.name);
+            $("#promotionTagsEdit").tagsinput('add', tag.name);
         });
     }
   }

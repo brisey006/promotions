@@ -1,5 +1,4 @@
 require('dotenv').config();
-
 export default {
   mode: 'universal',
   /*
@@ -18,7 +17,6 @@ export default {
     script: [
       { src: '/plugins/jquery/jquery.min.js', body: true, ssr: false },
       { src: '/plugins/jquery-ui/jquery-ui.js', body: true, ssr: false },
-      { src: '/plugins/moment/moment.min.js', body: true, ssr: false },
       { src: '/plugins/popper/popper.js', body: true, ssr: false },
       { src: '/plugins/feather/feather.min.js', body: true, ssr: false },
       { src: '/plugins/bootstrap/js/bootstrap.min.js', body: true, ssr: false },
@@ -50,36 +48,20 @@ export default {
   plugins: [
     { src: '~/plugins/v-select', mode: 'client' },
     { src: '~/plugins/cleave', mode: 'client' },
-    { src: '~/plugins/vue-tags', mode: 'client' },
     { src: '~/plugins/vue-notification', mode: 'client' },
   ],
   /*
   ** Nuxt.js dev-modules
   */
   buildModules: [
-    '@nuxtjs/dotenv'
+    '@nuxtjs/dotenv',
+    '@nuxtjs/moment'
   ],
   /*
   ** Nuxt.js modules
   */
   modules: [
-    '@nuxtjs/axios',
-    ['nuxt-fontawesome', {
-      imports: [
-       {
-         set: '@fortawesome/free-solid-svg-icons',
-         icons: ['fas']
-       },
-       {
-         set:'@fortawesome/free-brands-svg-icons',
-         icons: ['fab']
-       },
-       {
-        set:'@fortawesome/free-regular-svg-icons',
-        icons: ['far']
-      }
-     ]
-    }]
+    '@nuxtjs/axios'
   ],
   /*
   ** Axios module configuration
@@ -93,8 +75,8 @@ export default {
   */
   build: {
     transpile: ['vue-notifications'],
-    extend (config, ctx) {
-    }
+    extend(config, ctx) {},
+    analyze: true,
   },
   router: {
     middleware: ['auth'],

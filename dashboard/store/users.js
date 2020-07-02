@@ -1,4 +1,3 @@
-import moment from 'moment';
 import paginate from '../static/js/paginate';
 
 const state = () => ({
@@ -27,7 +26,7 @@ const getters = {
     getAddUserStatus: (state) => state.addUserStatus,
     getEditUserStatus: (state) => state.editUserStatus,
     getCropImageStatus: (state) => state.cropImageStatus,
-    getChangeUserRoleStatus: (state) => state.changeUserRoleStatus,
+    getChangeUserRoleStatus: (state) => state.cropImageStatus,
     getPagination: (state) => state.pagination,
 };
 
@@ -46,7 +45,16 @@ const actions = {
                 if (response.docs.length == 0 && response.totalDocs > 0) {
                     response = await this.$axios.$get(`/users?limit=${payload.limit}&page=1`);
                 }
-                commit('setUsers', response);
+                const docs = [];
+                let count = response.limit * (response.page -1);
+                response.docs.forEach(user => {
+                    count += 1;
+                    const created = this.$moment(user.createdAt).format("Do MMM YY");
+                    const updated = this.$moment(user.updatedAt).format("Do MMM YY");
+                    const userData = { ...user, index: count, created, updated };
+                    docs.push(userData);
+                });
+                commit('setUsers', docs);
                 delete response.docs;
                 commit('setPagination', response);
             }
@@ -128,19 +136,7 @@ const actions = {
 };
 
 const mutations = {
-    setUsers: (state, data) => {
-        const users = data.docs;
-        const docs = [];
-        let count = data.limit * (data.page -1);
-        users.forEach(user => {
-            count += 1;
-            const created = moment(user.createdAt).format("Do MMM YY");
-            const updated = moment(user.updatedAt).format("Do MMM YY");
-            const userData = { ...user, index: count, created, updated };
-            docs.push(userData);
-        });
-        state.users = docs;
-    },
+    setUsers: (state, data) => state.users = data,
     setProfile: (state, data) => state.profile = data,
     setPagination: (state, pagination) => {
         state.pagination = paginate(pagination);

@@ -55,47 +55,6 @@
         </div>
         <!--/ Sidebar Menu End -->
         <!--================================-->
-        <!-- Sidebar Footer Start -->
-        <!--================================-->
-        <div class="sidebar-footer">
-          <nuxt-link
-            class="pull-left"
-            :to="'/profile/'+user"
-            data-toggle="tooltip"
-            data-placement="top"
-            data-original-title="Profile"
-          >
-            <i data-feather="user" class="wd-16"></i>
-          </nuxt-link>
-          <a
-            class="pull-left"
-            href="mailbox.html"
-            data-toggle="tooltip"
-            data-placement="top"
-            data-original-title="Mailbox"
-          >
-            <i data-feather="mail" class="wd-16"></i>
-          </a>
-          <a
-            class="pull-left"
-            href="aut-unlock.html"
-            data-toggle="tooltip"
-            data-placement="top"
-            data-original-title="Lockscreen"
-          >
-            <i data-feather="lock" class="wd-16"></i>
-          </a>
-          <a
-            class="pull-left"
-            href="aut-signin.html"
-            data-toggle="tooltip"
-            data-placement="top"
-            data-original-title="Sing Out"
-          >
-            <i data-feather="log-out" class="wd-16"></i>
-          </a>
-        </div>
-        <!--/ Sidebar Footer End -->
       </div>
       <!--/ Page Sidebar End -->
 </template>

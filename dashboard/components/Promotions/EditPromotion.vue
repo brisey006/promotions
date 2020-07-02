@@ -104,7 +104,7 @@ export default {
     props: ["promotion", "modalId", "tagsInputId"],
     data() {
         const promotion = this.promotion;
-        const expiryDate = this.promotion.expiry != null ? moment(new Date(this.promotion.expiry)).format('YYYY/MM/DD') : '';
+        const expiryDate = this.promotion.expiry != null ? this.$moment(new Date(this.promotion.expiry)).format('YYYY/MM/DD') : '';
         return {
             title: promotion.title,
             description: promotion.description,

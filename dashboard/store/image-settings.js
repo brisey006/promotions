@@ -1,4 +1,3 @@
-import moment from 'moment';
 import paginate from '../static/js/paginate';
 
 const state = () => ({
@@ -38,7 +37,19 @@ const actions = {
             if (response.docs.length == 0 && response.totalDocs > 0) {
                 response = await this.$axios.$get(`/settings/image?limit=${payload.limit}&page=1`);
             }
-            commit('setImageSettings', response);
+
+            const data = response;
+            const docs = [];
+            let count = data.limit * (data.page -1);
+            data.docs.forEach(imageSetting => {
+                count += 1;
+                const created = this.$moment(imageSetting.createdAt).format("Do MMM YY");
+                const updated = this.$moment(imageSetting.updatedAt).format("Do MMM YY");
+                const setting = { ...imageSetting, index: count, created, updated };
+                docs.push(setting);
+            });
+
+            commit('setImageSettings', docs);
             delete response.docs;
             commit('setPagination', response);
         } catch (e) {
@@ -90,19 +101,7 @@ const actions = {
 };
 
 const mutations = {
-    setImageSettings: (state, imageSettings) => {
-        const data = imageSettings;
-        const docs = [];
-        let count = data.limit * (data.page -1);
-        data.docs.forEach(imageSetting => {
-            count += 1;
-            const created = moment(imageSetting.createdAt).format("Do MMM YY");
-            const updated = moment(imageSetting.updatedAt).format("Do MMM YY");
-            const setting = { ...imageSetting, index: count, created, updated };
-            docs.push(setting);
-        });
-        state.imageSettings = docs;
-    },
+    setImageSettings: (state, imageSettings) => state.imageSettings = imageSettings,
     setImageSetting: (state, data) => state.imageSetting = data,
     setImageKeys: (state, data) => state.imageKeys = data,
     setImageSettingsStatus: (state, data) => state.addImageSettingsStatus = data,

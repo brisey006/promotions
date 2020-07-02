@@ -44,7 +44,7 @@ const actions = {
             }
         } else {
             if (error.message != undefined) {
-                commit('setErrors', error);
+                commit('setErrors', { message: JSON.stringify([error.message]) });
             }
         }
     },
@@ -65,10 +65,14 @@ const actions = {
 const mutations = {
     setUserRoles: (state, data) => state.userRoles = data,
     setErrors: (state, errors) => {
-        state.errors = {
-            array: JSON.parse(errors.message),
-            time: Date.now()
-        };
+        try {
+            state.errors = {
+                array: JSON.parse(errors.message),
+                time: Date.now()
+            };
+        } catch (e) {
+            console.log(e);
+        }
     },
     setDeletedItem: (state, data) => state.deletedItem = data,
     setUpdatedItem: (state, data) => state.updatedItem = data,
