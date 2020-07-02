@@ -42,8 +42,10 @@ const actions = {
                 commit('setUser', null);
                 commit('setErrors', { message: JSON.stringify(['An API seems down. Please check with the site administrator!']) });
             } else {
-                if (e.response.status == 403) {
-                    commit('setUser', null);
+                if (e.response != undefined) {
+                    if (e.response.status == 403) {
+                        commit('setUser', null);
+                    }
                 }
             }
         }
