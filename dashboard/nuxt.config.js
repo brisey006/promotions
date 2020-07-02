@@ -76,7 +76,7 @@ export default {
   build: {
     transpile: ['vue-notifications'],
     extend(config, ctx) {},
-    analyze: true,
+    //analyze: true,
   },
   router: {
     middleware: ['auth'],
