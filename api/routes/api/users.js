@@ -140,7 +140,7 @@ router.delete('/logout', verifyToken, (req, res) => {
     res.json(req.user);
 });
 
-router.get('/', verifyToken, async (req, res) => {
+router.get('/', verifyToken, isSuperAdmin, async (req, res) => {
     const page = req.query.page != undefined ? req.query.page : 1;
     const limit = req.query.limit != undefined ? req.query.limit : 10;
     const query = req.query.query != undefined ? req.query.query : '';
@@ -439,6 +439,24 @@ router.post('/set/key/for/user/deletion', verifyToken, isSuperAdmin, (req, res, 
             error = new Error(JSON.stringify(['Error Id: fgytdcx1']));
         }
         next(error);
+    } catch (e) {
+        const error = new Error(JSON.stringify([e.message]));
+        next(error);
+    }
+});
+
+router.put('/:id/settings/change-role/', verifyToken, isSuperAdmin, async (req, res, next) => {
+    try {
+        let result = await User.updateOne({ _id: req.params.id }, { $set: { userType: req.body.userType } });
+        if (result.nModified == 1) {
+            let newData = await User.findOne({ _id: req.params.id });
+            res.json(newData);
+        } else {
+            const errors = ['Failed to change user role. Please try again later!'];
+            const error = new Error(JSON.stringify(errors));
+            error.status = 406;
+            next(error);
+        }
     } catch (e) {
         const error = new Error(JSON.stringify([e.message]));
         next(error);

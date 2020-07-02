@@ -51,8 +51,8 @@ function isSuperAdmin(req, res, next) {
     if (req.user.userType == roles.SUPER_USER) {
       next();
     } else {
-      const error = new Error(JSON.stringify(['You do not have enough permissions.']));
-      error.status = 403;
+      const error = new Error(JSON.stringify(['You do not have enough permissions to access this information.']));
+      error.status = 401;
       next(error);
     }
   } catch (e) {
@@ -65,8 +65,8 @@ function ownDocument(user, docUser, next) {
   if (user._id == docUser) {
     return;
   } else {
-    const error = new Error(JSON.stringify(['You do not have enough permissions.']));
-    error.status = 403;
+    const error = new Error(JSON.stringify(['You do not have enough permissions to access this information.']));
+    error.status = 401;
     next(error);
   }
 }
