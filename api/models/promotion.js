@@ -16,10 +16,7 @@ const PromotionSchema = new mongoose.Schema({
     },
     image: {
         original: String,
-        thumbnail: {
-            type: String,
-            default: '/assets/images/promotions/placeholder.png'
-        },
+        thumbnail: String,
         cropped: String
     },
     originalPrice: Number,

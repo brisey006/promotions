@@ -25,10 +25,7 @@ const SellerSchema = new mongoose.Schema({
     },
     image: {
         original: String,
-        thumbnail: {
-            type: String,
-            default: '/assets/images/sellers/placeholder.png'
-        },
+        thumbnail: String,
         cropped: String
     },
     promotions: {

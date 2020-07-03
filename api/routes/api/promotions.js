@@ -72,7 +72,7 @@ router.post('/', verifyToken, async (req, res, next) => {
     }
 });
 
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
     const page = req.query.page != undefined ? req.query.page : 1;
     const limit = req.query.limit != undefined ? req.query.limit : 10;
     const query = req.query.query != undefined ? req.query.query : '';
@@ -104,7 +104,7 @@ router.get('/', async (req, res) => {
     res.json(promotions);
 });
 
-router.get('/seller/:seller', async (req, res) => {
+router.get('/seller/:seller', async (req, res, next) => {
     const page = req.query.page != undefined ? req.query.page : 1;
     const limit = req.query.limit != undefined ? req.query.limit : 20;
 
@@ -130,7 +130,7 @@ router.get('/seller/:seller', async (req, res) => {
     res.json(promotions);
 });
 
-router.get('/search', async (req, res) => {
+router.get('/search', async (req, res, next) => {
     const page = req.query.page != undefined ? req.query.page : 1;
     const limit = req.query.limit != undefined ? req.query.limit : 20;
     const query = req.query.query;
@@ -157,7 +157,7 @@ router.get('/search', async (req, res) => {
     res.json(promotions);
 });
 
-router.get('/:slug', async (req, res) => {
+router.get('/:slug', async (req, res, next) => {
     let promotion = await Promotion
         .findOne({ slug: req.params.slug })
         .populate([
@@ -173,7 +173,7 @@ router.get('/:slug', async (req, res) => {
     res.json(promotion);
 });
 
-router.delete('/:id', verifyToken, async (req, res) => {
+router.delete('/:id', verifyToken, async (req, res, next) => {
     let result = await Promotion.deleteOne({ _id: req.params.id });
     res.json({
         status: 'deleted',
@@ -181,23 +181,25 @@ router.delete('/:id', verifyToken, async (req, res) => {
     });
 });
 
-router.put('/:id', verifyToken, async (req, res) => {
+router.put('/:id', verifyToken, async (req, res, next) => {
     try {
         const id = req.params.id;
         const { tagsArray } = req.body;
         const tags = [];
 
-        if (tagsArray.length > 0) {
-            for (let i = 0; i < tagsArray.length; i++) {
-                const name = tagsArray[i].toLowerCase();
-                const tag = await Tag.findOne({ name });
-
-                if (tag) {
-                    tags.push(tag._id);
-                } else {
-                    const newTag = new Tag({ name });
-                    await newTag.save();
-                    tags.push(newTag._id);
+        if (tagsArray) {
+            if (tagsArray.length > 0) {
+                for (let i = 0; i < tagsArray.length; i++) {
+                    const name = tagsArray[i].toLowerCase();
+                    const tag = await Tag.findOne({ name });
+    
+                    if (tag) {
+                        tags.push(tag._id);
+                    } else {
+                        const newTag = new Tag({ name });
+                        await newTag.save();
+                        tags.push(newTag._id);
+                    }
                 }
             }
         }

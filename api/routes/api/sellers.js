@@ -8,6 +8,9 @@ const slugify = require('../../functions/index').slugify;
 const verifyToken = require('../../config/auth').verifyToken;
 const imageSettings = require('../../data/image-settings');
 const userRoles = require('../../config/auth').roles;
+const isSuperAdmin = require('../../config/auth').isSuperAdmin;
+
+const { modifySellerPermission } = require('../../permissions/sellers');
 
 const Seller = require('../../models/seller');
 const User = require('../../models/user');
@@ -74,28 +77,39 @@ router.get('/search-users', async (req, res) => {
     res.json(users);
 });
 
-router.get('/', verifyToken, async (req, res) => {
-    const page = req.query.page != undefined ? req.query.page : 1;
-    const limit = req.query.limit != undefined ? req.query.limit : 10;
-    const query = req.query.query != undefined ? req.query.query : '';
-    const sortBy = req.query.sort != undefined ? req.query.sort : 'createdAt';
-    const order = req.query.order != undefined ? req.query.order : -1;
+router.get('/', verifyToken, async (req, res, next) => {
+    try {
+        const administrator = req.user.userType == userRoles.SUPER_USER ? undefined : req.user._id;
+        const page = req.query.page != undefined ? req.query.page : 1;
+        const limit = req.query.limit != undefined ? req.query.limit : 10;
+        const query = req.query.query != undefined ? req.query.query : '';
+        const sortBy = req.query.sort != undefined ? req.query.sort : 'createdAt';
+        const order = req.query.order != undefined ? req.query.order : -1;
 
-    const re = new RegExp(query, "gi");
+        const re = new RegExp(query, "gi");
 
-    let sellers = await Seller.paginate(
-        { name: re },
-        {
-            limit,
-            page,
-            sort: { [sortBy]: order },
-            populate: {
-                path: 'administrator',
-                select: ['fullName', 'photoUrl']
-            }
+        const filters = { name: re, administrator };
+        if (filters.administrator == undefined) {
+            delete filters.administrator;
         }
-    );
-    res.json(sellers);
+
+        let sellers = await Seller.paginate(
+            filters,
+            {
+                limit,
+                page,
+                sort: { [sortBy]: order },
+                populate: {
+                    path: 'administrator',
+                    select: ['fullName', 'photoUrl']
+                }
+            }
+        );
+        res.json(sellers);
+    } catch (e) {
+        const error = new Error(JSON.stringify([e.message]));
+        next(error);
+    }
 });
 
 router.get('/:slug', verifyToken, async (req, res) => {
@@ -108,7 +122,7 @@ router.get('/:slug', verifyToken, async (req, res) => {
     res.json(seller);
 });
 
-router.delete('/:id', verifyToken, async (req, res) => {
+router.delete('/:id', verifyToken, modifySellerPermission, async (req, res) => {
     try {
         const data = await Seller.findOne({  _id: req.params.id });
         let result = await Seller.deleteOne({ _id: req.params.id });
@@ -133,7 +147,7 @@ router.delete('/:id', verifyToken, async (req, res) => {
     }
 });
 
-router.put('/:id', verifyToken, async (req, res, next) => {
+router.put('/:id', verifyToken, modifySellerPermission, async (req, res, next) => {
     try {
         let data = req.body;
         let result = await Seller.updateOne({ _id: req.params.id }, { $set: data });
@@ -155,7 +169,7 @@ router.put('/:id', verifyToken, async (req, res, next) => {
     }
 });
 
-router.post('/:id/image', verifyToken, async (req, res, next) => {
+router.post('/:id/image', verifyToken, modifySellerPermission, async (req, res, next) => {
     try {
         if (Object.keys(req.files).length == 0) {
             return res.status(400).send('No files were uploaded.');
@@ -192,7 +206,7 @@ router.post('/:id/image', verifyToken, async (req, res, next) => {
     }
 });
 
-router.post('/:id/image/crop', async (req, res, next) => {
+router.post('/:id/image/crop', verifyToken, modifySellerPermission, async (req, res, next) => {
     try {
         sharp.cache(false);
         let { width, height, x, y } = req.body;
