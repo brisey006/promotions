@@ -13,17 +13,21 @@
                     <ul>
                         <li>
                             <a href="#smartwizard-step-1" class="mb-3">
-                                <span class="sw-done-icon ti-check"></span>
-                                <span class="sw-icon ti-signal"></span>
-                                Add Image
+                                <div class="step-icons">
+                                    <check-icon class="custom-class done" size="18" />
+                                    <image-icon class="custom-class not-done" size="18" />
+                                    Add Image
+                                </div>
                                 <div class="text-muted small">Upload image of choice</div>
                             </a>
                         </li>
                         <li>
                             <a href="#smartwizard-step-2" class="mb-3">
-                                <span class="sw-done-icon ti-check"></span>
-                                <span class="sw-icon ti-desktop"></span>
-                                Crop
+                                <div class="step-icons">
+                                    <check-icon class="custom-class done" size="18" />
+                                    <image-icon class="custom-class not-done" size="18" />
+                                    Crop
+                                </div>
                                 <div class="text-muted small">Crop the image</div>
                             </a>
                         </li>
@@ -47,6 +51,7 @@
                     <button type="button" @click="goToCrop()" class="btn btn-primary">Next</button>
                 </div>
                 <div v-else-if="imageSrc != null && finishStep" class="modal-footer">
+                    <button type="button" @click="goToPrev()" class="btn btn-primary">Back</button>
                     <button v-if="cropImageStatus.loading" class="btn btn-primary" disabled>
                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                         Loading...
@@ -60,12 +65,15 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { XIcon } from 'vue-feather-icons';
+import { XIcon, ImageIcon, CropIcon, CheckIcon } from 'vue-feather-icons';
 
 export default {
     name: 'AddImage',
     components: {
-        XIcon
+        XIcon,
+        ImageIcon,
+        CropIcon,
+        CheckIcon
     },
     computed: mapGetters({
         user: 'auth/getUser',
@@ -100,6 +108,9 @@ export default {
                 viewMode: 1,
             });
             
+        },
+        goToPrev() {
+            $('#smartwizard').smartWizard("prev");
         },
         setCropData() {
             this.$emit('cropImage', this.cropper.getData());
@@ -157,6 +168,13 @@ export default {
                             toolbarSettings: {
                                 toolbarPosition: 'none',
                             },
+                            anchorSettings: {
+                                anchorClickable: false,
+                                enableAllAnchors: false,
+                                markDoneStep: true,
+                                markAllPreviousStepsAsDone: true,
+                                enableAnchorOnDoneStep: true
+                            },
                         });
                         clearInterval(interval);
                         resolve('loaded');
@@ -197,3 +215,22 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+    .step-icons {
+        display: inline;
+    }
+    .step-icons svg:nth-child(1) {
+        display: none;
+    }
+    .done .nav-link .step-icons svg:nth-child(1) {
+        display: inline;
+    }
+    .done .nav-link .step-icons svg:nth-child(2) {
+        display: none;
+    }
+
+    .done .nav-link {
+        color: darkgreen;
+    }
+</style>

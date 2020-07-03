@@ -1,7 +1,7 @@
 <template>
      <!--Modal Start-->
     <div class="modal fade effect-scale" id="modalAddPage" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-dialog modal-lg" v-if="userRoles" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">New Shop Page</h5>
@@ -22,7 +22,7 @@
                         <textarea rows="3" name="description" v-model="description" class="form-control" placeholder="Description"></textarea>
                     </div>
                 </div>
-                <div class="row mg-t-20">
+                <div v-if="user.userType != userRoles.ADMIN" class="row mg-t-20">
                     <label class="col-sm-2 form-control-label"><span class="tx-danger">*</span>Admin:</label>
                     <div class="col-sm-10 mg-t-10 mg-sm-t-0">
                         <client-only>
@@ -82,7 +82,9 @@ export default {
         XIcon
     },
     computed: mapGetters({
-        addPageStatus: 'pages/getAddPageStatus'
+        addPageStatus: 'pages/getAddPageStatus',
+        userRoles: 'general/getUserRoles',
+        user: 'auth/getUser',
     }),
     watch: {
         addPageStatus (val, old) {
@@ -98,7 +100,10 @@ export default {
             addPage: 'pages/addPage'
         }),
         async saveData() {
-            const { name, description, email, physicalAddress, cell, tell, admin } = this;
+            let { name, description, email, physicalAddress, cell, tell, admin } = this;
+            if (this.user.userType == this.userRoles.ADMIN) {
+                admin = this.user._id;
+            }
             const data = { name, description, email, address: physicalAddress, cell, tell, administrator: admin };
             this.addPage(data);
         },

@@ -1,5 +1,5 @@
 <template>
-  <div class="col-md-6 col-lg-3 col-xl-3">
+  <div class="col-md-6 col-lg-3 col-xl-3 break-word">
     <div class="card mg-b-30">
       <div @click="counter()" style="cursor: pointer" class="card-header d-flex align-items-center justify-content-between">
         <h6 class="tx-13 mb-0">User Details</h6>

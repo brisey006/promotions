@@ -1,7 +1,7 @@
 <template>
      <!--Modal Start-->
     <div class="modal fade effect-scale" :id="modalId" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
+        <div v-if="userRoles" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Edit Shop Page</h5>
@@ -22,7 +22,7 @@
                         <textarea rows="3" name="description" v-model="description" class="form-control" placeholder="Description"></textarea>
                     </div>
                 </div>
-                <div class="row mg-t-20">
+                <div v-if="user.userType != userRoles.ADMIN" class="row mg-t-20">
                     <label class="col-sm-2 form-control-label"><span class="tx-danger">*</span>Admin:</label>
                     <div class="col-sm-10 mg-t-10 mg-sm-t-0">
                         <client-only>
@@ -83,7 +83,9 @@ export default {
     },
     computed: mapGetters({
         editPageStatus: 'pages/getEditPageStatus',
-        shop: "shop/data"
+        shop: "shop/data",
+        userRoles: 'general/getUserRoles',
+        user: 'auth/getUser',
     }),
     props: ["modalId"],
     watch: {
@@ -101,8 +103,13 @@ export default {
             editPage: 'pages/editPage'
         }),
         async saveData() {
-            const { name, description, email, physicalAddress, cell, tell, admin } = this;
-            const data = { name, description, email, address: physicalAddress, cell, tell, administrator: admin._id };
+            let { name, description, email, physicalAddress, cell, tell, admin } = this;
+            if (this.user.userType == this.userRoles.ADMIN) {
+                admin = this.user._id;
+            } else {
+                admin = admin._id;
+            }
+            const data = { name, description, email, address: physicalAddress, cell, tell, administrator: admin };
             this.editPage({ data, id: this.shop._id });
         },
         async fetchOptions (search, loading) {

@@ -19,9 +19,16 @@
                   <div class="dropdown-menu dropdown-menu-right dropdown-profile">
                     <div class="user-profile-area">
                       <div class="user-profile-heading">
+                        <div class="profile-thumbnail">
+                          <img
+                            v-if="user.image != undefined"
+                            :src="apiHost + user.image.thumbnail +'?rand='+Math.random()"
+                            class="img-fluid wd-35 ht-35 rounded-circle"
+                          />
+                        </div>
                         <div class="profile-text">
                           <h6>{{user.firstName}}</h6>
-                          <span>{{user.email}}</span>
+                          <span>{{user.userType}}</span>
                         </div>
                       </div>
                       <nuxt-link :to="'/users/'+user._id" class="dropdown-item">
@@ -67,7 +74,10 @@ export default {
 </script>
 
 <style>
-  .user-profile-heading{
-    box-sizing: content-box;
+  .profile-thumbnail{
+    flex: none;
+  }
+  .profile-text{
+    word-break: break-all;
   }
 </style>

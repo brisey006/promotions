@@ -121,7 +121,8 @@
                                         <th scope="row" class="index-row">{{promotion.index}}</th>
                                         <td style="width: 3%">
                                             <div class="d-flex">
-                                                <img class="wd-35 rounded-circle img-fluid dp-style" :src="apiHost +promotion.image.thumbnail" alt="">
+                                                <img v-if="promotion.image" class="wd-35 rounded-circle img-fluid dp-style" :src="apiHost +promotion.image.thumbnail" alt="">
+                                                <image-icon v-else class="custom-class" size="16" />
                                             </div>
                                         </td>
                                         <td v-bind:class="{boldText: params.sort == 'title'}"><nuxt-link :to="'/promotions/'+promotion.slug">{{promotion.title}}</nuxt-link></td>
@@ -183,7 +184,7 @@ import { mapActions, mapGetters, mapMutations } from 'vuex';
 import AddPromotion from '@/components/Promotions/AddPromotion';
 import EditPromotion from '@/components/Promotions/EditPromotion';
 import DeleteAlert from '@/components/DeleteAlert';
-import { PlusIcon, Trash2Icon, ArrowUpIcon, ArrowDownIcon, Edit3Icon } from 'vue-feather-icons';
+import { PlusIcon, Trash2Icon, ArrowUpIcon, ArrowDownIcon, Edit3Icon, ImageIcon } from 'vue-feather-icons';
 export default {
     components: {
         AddPromotion,
@@ -193,7 +194,8 @@ export default {
         Trash2Icon,
         ArrowUpIcon,
         ArrowDownIcon,
-        Edit3Icon
+        Edit3Icon,
+        ImageIcon
     },
     head: {
         link: [
@@ -292,5 +294,8 @@ export default {
     }
     .clickable {
         cursor: pointer;
+    }
+    .custom-class {
+        color: #6b6b6b;
     }
 </style>

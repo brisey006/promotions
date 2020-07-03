@@ -1,5 +1,5 @@
 <template>
-  <div class="col-md-4 col-lg-3 col-xl-3">
+  <div class="col-md-4 col-lg-3 col-xl-3 break-word">
     <div class="card mg-b-30">
       <div class="card-header d-flex align-items-center justify-content-between">
         <h6 class="tx-13 mb-0">Shop Details</h6>
@@ -9,12 +9,12 @@
         </div>
       </div>
       <div class="card-body">
-        <img class="card-img-top" v-if="shop.image.cropped != undefined" :src="apiHost + shop.image.cropped+'?rand='+Math.random()" alt="Card image cap">
+        <img class="card-img-top" v-if="shop.image != undefined" :src="apiHost + shop.image.cropped+'?rand='+Math.random()" alt="Card image cap">
         <div v-else>
             No shop image to show
         </div>
         <div v-if="shop" class="d-flex align-items-center justify-content-between">
-            <a @click="loadImageSetting()" v-if="shop.image.cropped == undefined" :href="'#addImage-'+shop._id" data-toggle="modal">Add Image</a>
+            <a @click="loadImageSetting()" v-if="shop.image == undefined" :href="'#addImage-'+shop._id" data-toggle="modal">Add Image</a>
             <a @click="loadImageSetting()" v-else :href="'#addImage-'+shop._id" data-toggle="modal">Change Image</a>
         </div>
         <add-image :modalId="'addImage-'+shop._id" @cropImage="cropImage" :uploadUrl="'/sellers/'+shop._id+'/image'" />

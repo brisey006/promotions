@@ -16,3 +16,6 @@
 .clickable {
     cursor: pointer;
 }
+.break-word {
+    word-break: break-word;
+}
