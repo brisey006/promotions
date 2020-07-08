@@ -52,6 +52,10 @@ module.exports = {
                     {
                         path: 'tags',
                         select: ['name']
+                    },
+                    {
+                        path: 'prices.currency',
+                        select: [ 'name', 'acronym', 'symbol' ]
                     }
                 ]
             }
