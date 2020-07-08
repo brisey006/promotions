@@ -9,7 +9,7 @@ const slugify = require('../../functions/index').slugify;
 const imageSettings = require('../../data/image-settings');
 const userRoles = require('../../config/auth').roles;
 
-const { getPromotion, getPromotions } = require('../../functions/promotions');
+const { getPromotionById, getPromotions, getPromotionBySlug } = require('../../functions/promotions');
 
 const Promotion = require('../../models/promotion');
 const Tag = require('../../models/tag');
@@ -71,7 +71,7 @@ router.post('/', verifyUser, async (req, res, next) => {
 
 router.post('/:id/add-price', async (req, res, next) => {
     try {
-        const { currency, was, now } = req.body;
+        let { currency, was, now } = req.body;
         const errors = [];
 
         if (!currency) {
@@ -100,16 +100,18 @@ router.post('/:id/add-price', async (req, res, next) => {
         }
 
         if (errors.length == 0) {
-            
+            was = parseFloat(was);
+            now = parseFloat(now);
+
             const price = {
                 currency: currencyObj,
                 key: currencyObj.acronym,
-                was,
-                now
+                was: was.toFixed(2),
+                now: now.toFixed(2)
             };
             promotion.prices.push(price);
             await promotion.save();
-            const updated = await getPromotion(promotion._id);
+            const updated = await getPromotionById(promotion._id);
             res.json(updated);
         } else {
             const error = new Error(JSON.stringify(errors));
@@ -118,6 +120,7 @@ router.post('/:id/add-price', async (req, res, next) => {
         }
 
     } catch (e) {
+        console.log(e);
         const error = new Error(JSON.stringify([e.message]));
         next(error);
     }
@@ -140,7 +143,7 @@ router.put('/:id/activate', async (req, res, next) => {
         if (errors.length == 0) {
             promotion.active = active;
             await promotion.save();
-            const updated = await getPromotion(promotion._id);
+            const updated = await getPromotionById(promotion._id);
             res.json(updated);
         } else {
             const error = new Error(JSON.stringify(errors));
@@ -168,7 +171,7 @@ router.delete('/:id/delete-price', verifyUser, modifyPromotionPermission, async 
         }
         
         await promotion.save();
-        let updated = await getPromotion(promotion._id);
+        let updated = await getPromotionById(promotion._id);
         res.json(updated);
     } catch (e) {
         const error = new Error(JSON.stringify([e.message]));
@@ -250,22 +253,7 @@ router.get('/search', async (req, res, next) => {
 });
 
 router.get('/:slug', async (req, res, next) => {
-    let promotion = await Promotion
-        .findOne({ slug: req.params.slug })
-        .populate([
-            {
-                path: 'seller',
-                select: ['name', 'logoUrl', 'slug']
-            },
-            {
-                path: 'tags',
-                select: ['name']
-            },
-            {
-                path: 'prices.currency',
-                select: ['acronym', 'name', 'symbol']
-            }
-        ]);
+    const promotion = await getPromotionBySlug(req.params.slug);
     res.json(promotion);
 });
 

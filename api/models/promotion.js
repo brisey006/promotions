@@ -21,18 +21,16 @@ const PromotionSchema = new mongoose.Schema({
     },
     prices: [{
         currency: {
-            type: mongoose.Schema.Types.ObjectId, ref: 'Currency',
-            unique: true
+            type: mongoose.Schema.Types.ObjectId, ref: 'Currency'
         },
         key: {
             type: String,
             index: true,
             unique: true
         },
-        was: Number,
-        now: Number
+        was: mongoose.Types.Decimal128,
+        now: mongoose.Types.Decimal128
     }],
-    discount: Number,
     active: {
         type: Boolean,
         default: false
@@ -44,6 +42,20 @@ const PromotionSchema = new mongoose.Schema({
 }, {
     timestamps: true
 });
+
+PromotionSchema.set('toJSON', {
+    getters: true,
+    transform: (doc, ret) => {
+      if (ret.was) {
+        ret.was = ret.was.toString();
+      }
+      if (ret.now) {
+        ret.now = ret.now.toString();
+      }
+      delete ret.__v;
+      return ret;
+    },
+  });
 
 PromotionSchema.plugin(mongoosePaginate);
 const Promotion = mongoose.model('Promotion', PromotionSchema);

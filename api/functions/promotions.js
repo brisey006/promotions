@@ -1,24 +1,47 @@
 const Promotion = require('../models/promotion');
 
+const pricesAsDoubles = (promotion) => {
+    if (promotion.prices.length != 0) {
+        let prices = promotion.prices.map(price => {
+            let was = parseFloat(price.was.toString());
+            let now = parseFloat(price.now.toString());
+            let newPrice = { ...price._doc, now, was };
+            return newPrice;
+        });
+        return { ...promotion._doc, prices };
+    }
+    return promotion;
+}
+
+const populateOptions = () => {
+    return [
+        {
+            path: 'seller',
+            select: ['name', 'logoUrl', 'slug']
+        },
+        {
+            path: 'tags',
+            select: ['name']
+        },
+        {
+            path: 'prices.currency',
+            select: ['acronym', 'name', 'symbol']
+        }
+    ];
+}
+
 module.exports = {
-    async getPromotion(id) {
-        let updated = await Promotion
+    async getPromotionById(id) {
+        let promotion = await Promotion
         .findOne({ _id: id })
-        .populate([
-            {
-                path: 'seller',
-                select: ['name', 'logoUrl', 'slug']
-            },
-            {
-                path: 'tags',
-                select: ['name']
-            },
-            {
-                path: 'prices.currency',
-                select: ['acronym', 'name', 'symbol']
-            }
-        ]);
-        return updated;
+        .populate(populateOptions());
+        return pricesAsDoubles(promotion);
+    },
+    async getPromotionBySlug(slug) {
+        let promotion = await Promotion
+        .findOne({ slug })
+        .populate(populateOptions());
+        return pricesAsDoubles(promotion);
     },
     async getPromotions(req, user) {
         const page = req.query.page != undefined ? req.query.page : 1;
@@ -44,22 +67,13 @@ module.exports = {
                 limit,
                 sort: { [sortBy]: order },
                 page,
-                populate: [
-                    {
-                        path: 'seller',
-                        select: ['name', 'logoUrl', 'slug']
-                    },
-                    {
-                        path: 'tags',
-                        select: ['name']
-                    },
-                    {
-                        path: 'prices.currency',
-                        select: [ 'name', 'acronym', 'symbol' ]
-                    }
-                ]
+                populate: populateOptions()
             }
         );
+        const docs = promotions.docs.map(promotion => {
+            return pricesAsDoubles(promotion);
+        });
+        promotions.docs = docs;
         return promotions;
-    }
+    },
 }
