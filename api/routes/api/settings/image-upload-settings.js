@@ -3,15 +3,15 @@ const router = express.Router();
 const fs = require('fs');
 const path = require('path');
 
-const ImageUploadSetting = require('../../models/image-upload-setting');
+const ImageUploadSetting = require('../../../models/image-upload-setting');
 
-const verifyToken = require('../../config/auth').verifyToken;
-const slugify = require('../../functions/index').slugify;
-const isSuperAdmin = require('../../config/auth').isSuperAdmin;
+const verifyUser = require('../../../config/auth').verifyUser;
+const slugify = require('../../../functions/index').slugify;
+const isSuperUser = require('../../../config/auth').isSuperUser;
 
-const imageKeys = require('../../data/image-settings');
+const imageKeys = require('../../../data/image-settings');
 
-router.post('/', verifyToken, isSuperAdmin, async (req, res, next) => {
+router.post('/', verifyUser, isSuperUser, async (req, res, next) => {
     let { name, aspectRatio, maxSize, crop, thumbnailWidth, croppedWidth } = req.body;
     try {
         const errors = [];
@@ -103,7 +103,7 @@ router.post('/', verifyToken, isSuperAdmin, async (req, res, next) => {
     }
 });
 
-router.get('/', verifyToken, async (req, res) => {
+router.get('/', verifyUser, async (req, res) => {
     const page = req.query.page != undefined ? req.query.page : 1;
     const limit = req.query.limit != undefined ? req.query.limit : 10;
     const query = req.query.query != undefined ? req.query.query : '';
@@ -123,7 +123,7 @@ router.get('/', verifyToken, async (req, res) => {
     res.json(imageSettings);
 });
 
-router.get('/:slug', verifyToken, async (req, res, next) => {
+router.get('/:slug', verifyUser, async (req, res, next) => {
     try {
         const imageSetting = await ImageUploadSetting.findOne({ slug: req.params.slug });
         res.json(imageSetting);
@@ -133,11 +133,11 @@ router.get('/:slug', verifyToken, async (req, res, next) => {
     }
 });
 
-router.get('/keys/all', verifyToken, (req, res, next) => {
+router.get('/keys/all', verifyUser, (req, res, next) => {
     res.json(imageKeys);
 });
 
-router.put('/:id', verifyToken, isSuperAdmin, async (req, res) => {
+router.put('/:id', verifyUser, isSuperUser, async (req, res) => {
     try {
         const id = req.params.id;
         const aspectRatio = req.body.aspectRatio.split(':');
@@ -157,7 +157,7 @@ router.put('/:id', verifyToken, isSuperAdmin, async (req, res) => {
     }
 });
 
-router.delete('/:id', verifyToken, isSuperAdmin, async (req, res) => {
+router.delete('/:id', verifyUser, isSuperUser, async (req, res) => {
     try {
         const data = await ImageUploadSetting.findOne({  _id: req.params.id });
         let result = await ImageUploadSetting.deleteOne({ _id: req.params.id });

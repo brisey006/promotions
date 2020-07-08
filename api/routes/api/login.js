@@ -4,9 +4,9 @@ const jwt = require("jsonwebtoken");
 const router = express.Router();
 
 const User = require('../../models/user');
-const verifyToken = require('../../config/auth').verifyToken;
+const verifyUser = require('../../config/auth').verifyUser;
 
-router.get('/', verifyToken, async (req, res) => {
+router.get('/', verifyUser, async (req, res) => {
     res.json(req.user);
 });
 

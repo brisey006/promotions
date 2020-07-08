@@ -9,7 +9,7 @@ const roles = {
 
 module.exports = {
   roles,
-  verifyToken: (req, res, next) => {
+  verifyUser: (req, res, next) => {
     const error = new Error(JSON.stringify(['Invalid token. Login Again!']));
   
     const bearerHeader = req.headers['authorization'];
@@ -47,7 +47,7 @@ module.exports = {
       next(error);
     }
   },
-  isSuperAdmin: (req, res, next) => {
+  isSuperUser: (req, res, next) => {
     try {
       if (req.user.userType == roles.SUPER_USER) {
         next();

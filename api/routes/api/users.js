@@ -9,8 +9,8 @@ const randomString = require('random-string');
 const sharp = require('sharp');
 const sgMail = require('@sendgrid/mail');
 
-const verifyToken = require('../../config/auth').verifyToken;
-const isSuperAdmin = require('../../config/auth').isSuperAdmin;
+const verifyUser = require('../../config/auth').verifyUser;
+const isSuperUser = require('../../config/auth').isSuperUser;
 const ownDocument = require('../../config/auth').ownDocument;
 
 const userRoles = require('../../config/auth').roles;
@@ -32,7 +32,7 @@ router.get('/roles/user-types', (req, res, next) => {
     }
 });
 
-router.post('/', verifyToken, isSuperAdmin, async (req, res, next) => {
+router.post('/', verifyUser, isSuperUser, async (req, res, next) => {
     try {
         const { firstName, lastName, email, userType } = req.body;
         const createdBy = req.user._id;
@@ -132,15 +132,15 @@ router.post('/', verifyToken, isSuperAdmin, async (req, res, next) => {
     }
 });
 
-router.get('/user', verifyToken, (req, res) => {
+router.get('/user', verifyUser, (req, res) => {
     res.json(req.user);
 });
 
-router.delete('/logout', verifyToken, (req, res) => {
+router.delete('/logout', verifyUser, (req, res) => {
     res.json(req.user);
 });
 
-router.get('/', verifyToken, isSuperAdmin, async (req, res) => {
+router.get('/', verifyUser, isSuperUser, async (req, res) => {
     const page = req.query.page != undefined ? req.query.page : 1;
     const limit = req.query.limit != undefined ? req.query.limit : 10;
     const query = req.query.query != undefined ? req.query.query : '';
@@ -163,7 +163,7 @@ router.get('/', verifyToken, isSuperAdmin, async (req, res) => {
     res.json(users);
 });
 
-router.get('/:id', verifyToken, async (req, res, next) => {
+router.get('/:id', verifyUser, async (req, res, next) => {
     try {
         let user = await User.findOne({ _id: req.params.id }).select('-password');
         if (user != null) {
@@ -178,7 +178,7 @@ router.get('/:id', verifyToken, async (req, res, next) => {
     }
 });
 
-router.put('/:id', verifyToken, async (req, res, next) => {
+router.put('/:id', verifyUser, async (req, res, next) => {
     try {
         ownDocument(req.user, req.params.id, next);
         let data = req.body;
@@ -198,7 +198,7 @@ router.put('/:id', verifyToken, async (req, res, next) => {
     }
 });
 
-router.put('/:id/change-name', verifyToken, async (req, res) => {
+router.put('/:id/change-name', verifyUser, async (req, res) => {
     const { firstName, lastName } = req.body;
     const errors = [];
     
@@ -220,7 +220,7 @@ router.put('/:id/change-name', verifyToken, async (req, res) => {
     }
 });
 
-router.put('/settings/change-password', verifyToken, async (req, res, next) => {
+router.put('/settings/change-password', verifyUser, async (req, res, next) => {
     try {
         const { currentPassword, password, confirmation } = req.body;
         const user = await User.findOne({ _id: req.user._id });
@@ -286,7 +286,7 @@ router.put('/settings/change-password', verifyToken, async (req, res, next) => {
     }
 });
 
-router.delete('/:id', verifyToken, async (req, res, next) => {
+router.delete('/:id', verifyUser, async (req, res, next) => {
     try {
         const data = await User.findOne({  _id: req.params.id });
         let result = await User.deleteOne({ _id: req.params.id });
@@ -317,7 +317,7 @@ router.get('/:id/image', async (req, res) => {
     res.json(image);
 });
 
-router.post('/:id/image', verifyToken, async (req, res, next) => {
+router.post('/:id/image', verifyUser, async (req, res, next) => {
     try {
         if (Object.keys(req.files).length == 0) {
             return res.status(400).send('No files were uploaded.');
@@ -428,7 +428,7 @@ router.post('/:id/image/crop', async (req, res, next) => {
     }
 });
 
-router.post('/set/key/for/user/deletion', verifyToken, isSuperAdmin, (req, res, next) => {
+router.post('/set/key/for/user/deletion', verifyUser, isSuperUser, (req, res, next) => {
     try {
         const key = req.body.key;
         const hash = req.body.hash;
@@ -445,7 +445,7 @@ router.post('/set/key/for/user/deletion', verifyToken, isSuperAdmin, (req, res, 
     }
 });
 
-router.put('/:id/settings/change-role/', verifyToken, isSuperAdmin, async (req, res, next) => {
+router.put('/:id/settings/change-role/', verifyUser, isSuperUser, async (req, res, next) => {
     try {
         let result = await User.updateOne({ _id: req.params.id }, { $set: { userType: req.body.userType } });
         if (result.nModified == 1) {

@@ -19,12 +19,23 @@ const PromotionSchema = new mongoose.Schema({
         thumbnail: String,
         cropped: String
     },
-    originalPrice: Number,
-    discountedPrice: Number,
+    prices: [{
+        currency: {
+            type: mongoose.Schema.Types.ObjectId, ref: 'Currency',
+            unique: true
+        },
+        key: {
+            type: String,
+            index: true,
+            unique: true
+        },
+        was: Number,
+        now: Number
+    }],
     discount: Number,
     active: {
         type: Boolean,
-        default: true
+        default: false
     },
     expiry: Date,
     seller: { type: mongoose.Schema.Types.ObjectId, ref: 'Seller' },

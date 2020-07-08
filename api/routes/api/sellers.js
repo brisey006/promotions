@@ -5,10 +5,10 @@ const sharp = require('sharp');
 const fs = require('fs');
 
 const slugify = require('../../functions/index').slugify;
-const verifyToken = require('../../config/auth').verifyToken;
+const verifyUser = require('../../config/auth').verifyUser;
 const imageSettings = require('../../data/image-settings');
 const userRoles = require('../../config/auth').roles;
-const isSuperAdmin = require('../../config/auth').isSuperAdmin;
+const isSuperUser = require('../../config/auth').isSuperUser;
 
 const { modifySellerPermission } = require('../../permissions/sellers');
 
@@ -16,7 +16,7 @@ const Seller = require('../../models/seller');
 const User = require('../../models/user');
 const ImageUploadSetting = require('../../models/image-upload-setting');
 
-router.post('/', verifyToken, async (req, res, next) => {
+router.post('/', verifyUser, async (req, res, next) => {
     try {
         const { name, description, administrator } = req.body;
         const createdBy = req.user._id;
@@ -77,7 +77,7 @@ router.get('/search-users', async (req, res) => {
     res.json(users);
 });
 
-router.get('/', verifyToken, async (req, res, next) => {
+router.get('/', verifyUser, async (req, res, next) => {
     try {
         const administrator = req.user.userType == userRoles.SUPER_USER ? undefined : req.user._id;
         const page = req.query.page != undefined ? req.query.page : 1;
@@ -112,7 +112,7 @@ router.get('/', verifyToken, async (req, res, next) => {
     }
 });
 
-router.get('/:slug', verifyToken, async (req, res) => {
+router.get('/:slug', verifyUser, async (req, res) => {
     let seller = await Seller
     .findOne({ slug: req.params.slug })
     .populate({
@@ -122,7 +122,7 @@ router.get('/:slug', verifyToken, async (req, res) => {
     res.json(seller);
 });
 
-router.delete('/:id', verifyToken, modifySellerPermission, async (req, res) => {
+router.delete('/:id', verifyUser, modifySellerPermission, async (req, res) => {
     try {
         const data = await Seller.findOne({  _id: req.params.id });
         let result = await Seller.deleteOne({ _id: req.params.id });
@@ -147,7 +147,7 @@ router.delete('/:id', verifyToken, modifySellerPermission, async (req, res) => {
     }
 });
 
-router.put('/:id', verifyToken, modifySellerPermission, async (req, res, next) => {
+router.put('/:id', verifyUser, modifySellerPermission, async (req, res, next) => {
     try {
         let data = req.body;
         let result = await Seller.updateOne({ _id: req.params.id }, { $set: data });
@@ -169,7 +169,7 @@ router.put('/:id', verifyToken, modifySellerPermission, async (req, res, next) =
     }
 });
 
-router.post('/:id/image', verifyToken, modifySellerPermission, async (req, res, next) => {
+router.post('/:id/image', verifyUser, modifySellerPermission, async (req, res, next) => {
     try {
         if (Object.keys(req.files).length == 0) {
             return res.status(400).send('No files were uploaded.');
@@ -206,7 +206,7 @@ router.post('/:id/image', verifyToken, modifySellerPermission, async (req, res, 
     }
 });
 
-router.post('/:id/image/crop', verifyToken, modifySellerPermission, async (req, res, next) => {
+router.post('/:id/image/crop', verifyUser, modifySellerPermission, async (req, res, next) => {
     try {
         sharp.cache(false);
         let { width, height, x, y } = req.body;
