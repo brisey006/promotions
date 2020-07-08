@@ -1,16 +1,29 @@
 const Promotion = require('../models/promotion');
 
-const pricesAsDoubles = (promotion) => {
-    if (promotion.prices.length != 0) {
-        let prices = promotion.prices.map(price => {
+const addBaseLinkToImages = (image) => {
+    Object.keys(image).forEach(key => {
+        if (typeof image[key] == 'string') {
+            image[key] = `${process.env.BASE_API_URL}${image[key]}`;
+        }
+    });
+}
+
+const pricesAsDoubles = (prices) => {
+    if (prices.length != 0) {
+        return prices.map(price => {
             let was = parseFloat(price.was.toString());
             let now = parseFloat(price.now.toString());
             let newPrice = { ...price._doc, now, was };
             return newPrice;
         });
-        return { ...promotion._doc, prices };
     }
-    return promotion;
+    return [];
+}
+
+const processPromotion = (promotion) => {
+    addBaseLinkToImages(promotion.image);
+    let prices = pricesAsDoubles(promotion.prices);
+    return { ...promotion._doc, prices };
 }
 
 const populateOptions = () => {
@@ -35,13 +48,13 @@ module.exports = {
         let promotion = await Promotion
         .findOne({ _id: id })
         .populate(populateOptions());
-        return pricesAsDoubles(promotion);
+        return processPromotion(promotion);
     },
     async getPromotionBySlug(slug) {
         let promotion = await Promotion
         .findOne({ slug })
         .populate(populateOptions());
-        return pricesAsDoubles(promotion);
+        return processPromotion(promotion);
     },
     async getPromotions(req, user) {
         const page = req.query.page != undefined ? req.query.page : 1;
@@ -71,7 +84,7 @@ module.exports = {
             }
         );
         const docs = promotions.docs.map(promotion => {
-            return pricesAsDoubles(promotion);
+            return processPromotion(promotion);
         });
         promotions.docs = docs;
         return promotions;
