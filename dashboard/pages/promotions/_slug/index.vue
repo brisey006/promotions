@@ -1,8 +1,19 @@
 <template>
     <div class="page-inner">
+
+        
+
         <!-- Breadcrumb Start -->
         <!--================================-->
         <div class="pageheader pd-t-25 pd-b-15">
+            <div v-if="promotion">
+                <div class="alert alert-danger" v-if="promotion.image == null" role="alert">
+                    Add a product image to activate promotion!
+                </div>
+                <div class="alert alert-danger" v-if="promotion.prices.length == 0" role="alert">
+                    Add a price to activate promotion!
+                </div>
+            </div>
             <div class="d-flex justify-content-between">
                 <div class="clearfix">
                     <div class="pd-t-5 pd-b-5">
@@ -62,12 +73,14 @@ export default {
     methods: {
         ...mapActions({
             fetchImageKeys: 'image-settings/fetchImageKeys',
-            fetchPromotion: 'promotions/fetchPromotion'
+            fetchPromotion: 'promotions/fetchPromotion',
+            fetchCurrencies: 'currencies/fetchCurrencies',
         }),
     }, 
     created() {
         this.fetchPromotion(this.$route.params.slug);
         this.fetchImageKeys();
+        this.fetchCurrencies();
     }
 }
 </script>

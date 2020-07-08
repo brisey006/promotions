@@ -48,8 +48,6 @@
                                 <option value="createdAt">Date Added</option>
                                 <option value="updatedAt">Date Updated</option>
                                 <option value="title">Title</option>
-                                <option value="originalPrice">Original Price</option>
-                                <option value="discountedPrice">Discounted Price</option>
                                 <option value="expiry">Expiry Date</option>
                             </select>
                             <span style="margin-left: 20px"></span>
@@ -78,16 +76,9 @@
                                         </span>
                                     </th>
                                     <th>Shop</th>
-                                    <th class="clickable" @click="sortBy('originalPrice')">
-                                        Original Price
-                                        <span v-if="params.sort == 'originalPrice'">
-                                            <arrow-up-icon v-if="params.order == 1" class="custom-class" size="11" />
-                                            <arrow-down-icon v-else class="custom-class" size="11" />
-                                        </span>
-                                    </th>
-                                    <th class="clickable" @click="sortBy('discountedPrice')">
-                                        Discounted Price
-                                        <span v-if="params.sort == 'discountedPrice'">
+                                    <th class="clickable" @click="sortBy('active')">
+                                        Active
+                                        <span v-if="params.sort == 'active'">
                                             <arrow-up-icon v-if="params.order == 1" class="custom-class" size="11" />
                                             <arrow-down-icon v-else class="custom-class" size="11" />
                                         </span>
@@ -127,8 +118,10 @@
                                         </td>
                                         <td v-bind:class="{boldText: params.sort == 'title'}"><nuxt-link :to="'/promotions/'+promotion.slug">{{promotion.title}}</nuxt-link></td>
                                         <td><nuxt-link :to="'/pages/'+promotion.seller.slug">{{promotion.seller.name}}</nuxt-link></td>
-                                        <td v-bind:class="{boldText: params.sort == 'originalPrice'}">{{promotion.originalPrice}}</td>
-                                        <td v-bind:class="{boldText: params.sort == 'discountedPrice'}">{{promotion.discountedPrice}}</td>
+                                        <td v-bind:class="{boldText: params.sort == 'active'}">
+                                            <span v-if="promotion.active" class="badge badge-outline-success">Active</span>
+                                            <span v-else class="badge badge-outline-danger">Deactivated</span>
+                                        </td>
                                         <td v-bind:class="{boldText: params.sort == 'expiry'}">{{promotion.expiryDate}}</td>
                                         <td v-bind:class="{boldText: params.sort == 'createdAt'}">{{promotion.created}}</td>
                                         <td v-bind:class="{boldText: params.sort == 'updatedAt'}">{{promotion.updated}}</td>

@@ -47,7 +47,13 @@
               <li>
                 <nuxt-link to="/settings/images">
                     <image-icon class="custom-class"></image-icon>
-                    <span>Image Settings</span>
+                    <span>Images</span>
+                </nuxt-link>
+              </li>
+              <li>
+                <nuxt-link to="/settings/currencies">
+                    <dollar-sign-icon class="custom-class"></dollar-sign-icon>
+                    <span>Currencies</span>
                 </nuxt-link>
               </li>
             </ul>
@@ -61,7 +67,7 @@
 
 <script>
 
-import { HomeIcon, UsersIcon, BriefcaseIcon, XIcon, GiftIcon, ImageIcon } from 'vue-feather-icons';
+import { HomeIcon, UsersIcon, BriefcaseIcon, XIcon, GiftIcon, ImageIcon, DollarSignIcon } from 'vue-feather-icons';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -72,7 +78,8 @@ export default {
       BriefcaseIcon,
       XIcon,
       GiftIcon,
-      ImageIcon
+      ImageIcon,
+      DollarSignIcon
     },
     computed: mapGetters({
         user: 'auth/getUser',

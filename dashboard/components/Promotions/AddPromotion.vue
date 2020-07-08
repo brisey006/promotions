@@ -1,5 +1,6 @@
 <template>
      <!--Modal Start-->
+     <client-only>
     <div class="modal fade effect-scale" id="modalForumTopic" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -31,18 +32,6 @@
                         </div>
                     </div>
                     <div class="row mg-t-20">
-                        <label class="col-sm-2 form-control-label"><strike>Was</strike></label>
-                        <div class="col-sm-10 mg-t-10 mg-sm-t-0">
-                            <input class="form-control form-control-sm" v-model="originalPrice" name="originalPrice" placeholder="Original Price" type="text">
-                        </div>
-                    </div>
-                    <div class="row mg-t-20">
-                        <label class="col-sm-2 form-control-label">Now:</label>
-                        <div class="col-sm-10 mg-t-10 mg-sm-t-0">
-                            <input class="form-control form-control-sm" v-model="discountedPrice" name="discountedPrice" placeholder="Promotion Price" type="text">
-                        </div>
-                    </div>
-                    <div class="row mg-t-20">
                         <label class="col-sm-2 form-control-label">Expiry Date:</label>
                         <div class="col-sm-10 mg-t-10 mg-sm-t-0">
                             <client-only>
@@ -58,22 +47,17 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                     <div>
-                        <div v-if="addPromotionStatus.loading" class="modal-footer">
-                            <button class="btn btn-primary" disabled>
-                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                Loading...
-                            </button>
-                        </div>
-                        <div v-else class="modal-footer">
-                            <button type="button" @click="savePromotion()" class="btn btn-primary">Create Promotion</button>
-                        </div>
-                    </div>
+                     <button v-if="addPromotionStatus.loading" class="btn btn-primary" disabled>
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        Loading...
+                    </button>
+                    <button v-else type="button" @click="savePromotion()" class="btn btn-primary">Create Promotion</button>
                 </div>
             </div>
         </div>
     </div>
     <!--/ Modal End-->
+     </client-only>
 </template>
 
 <script>
@@ -102,20 +86,18 @@ export default {
         }),
         async savePromotion() {
             let ex;
-            const { title, description, originalPrice, discountedPrice, expiry } = this;
+            const { title, description, expiry } = this;
             const tagsArray = $("#addPromoTags").tagsinput('items');
             const seller = this.seller != null ? this.seller : this.sellerS;
 
             if (expiry != null) {
                 ex = new Date(`${expiry.substring(0, 4)}-${expiry.substring(4, 6)}-${expiry.substring(6, 8)}`);
             }
-            this.addPromotion({ title, description, originalPrice, discountedPrice, tagsArray, seller, expiry: ex });
+            this.addPromotion({ title, description, tagsArray, seller, expiry: ex });
         },
         resetForm() {
             this.title = '';
             this.description = '';
-            this.originalPrice = '';
-            this.discountedPrice = '';
             this.expiry = '';
             this.sellers = [];
             this.sellerS = '';
@@ -131,8 +113,6 @@ export default {
         return {
             title: '',
             description: '',
-            originalPrice: '',
-            discountedPrice: '',
             tags: '',
             expiry: '',
             sellers: [],
