@@ -9,7 +9,7 @@
         </div>
       </div>
       <div class="card-body">
-        <img class="card-img-top" v-if="promotion.image != undefined" :src="apiHost + promotion.image.cropped+'?rand='+Math.random()" alt="Card image cap">
+        <img class="card-img-top" v-if="promotion.image != undefined" :src="promotion.image.cropped+'?rand='+Math.random()" alt="Card image cap">
         <div v-else>
             No product picture to show
         </div>

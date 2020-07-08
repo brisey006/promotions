@@ -112,7 +112,7 @@
                                         <th scope="row" class="index-row">{{promotion.index}}</th>
                                         <td style="width: 3%">
                                             <div class="d-flex">
-                                                <img v-if="promotion.image" class="wd-35 rounded-circle img-fluid dp-style" :src="apiHost +promotion.image.thumbnail" alt="">
+                                                <img v-if="promotion.image" class="wd-35 rounded-circle img-fluid dp-style" :src="promotion.image.thumbnail" alt="">
                                                 <image-icon v-else class="custom-class" size="16" />
                                             </div>
                                         </td>
