@@ -77,9 +77,8 @@ router.get('/search-users', async (req, res) => {
     res.json(users);
 });
 
-router.get('/', verifyUser, async (req, res, next) => {
+router.get('/', async (req, res, next) => {
     try {
-        const administrator = req.user.userType == userRoles.SUPER_USER ? undefined : req.user._id;
         const page = req.query.page != undefined ? req.query.page : 1;
         const limit = req.query.limit != undefined ? req.query.limit : 10;
         const query = req.query.query != undefined ? req.query.query : '';
@@ -88,10 +87,7 @@ router.get('/', verifyUser, async (req, res, next) => {
 
         const re = new RegExp(query, "gi");
 
-        const filters = { name: re, administrator };
-        if (filters.administrator == undefined) {
-            delete filters.administrator;
-        }
+        const filters = { name: re };
 
         let sellers = await Seller.paginate(
             filters,

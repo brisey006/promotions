@@ -30,7 +30,7 @@ const populateOptions = () => {
     return [
         {
             path: 'seller',
-            select: ['name', 'logoUrl', 'slug']
+            select: ['name', 'logoUrl', 'slug', 'address', 'cell', 'email']
         },
         {
             path: 'tags',
