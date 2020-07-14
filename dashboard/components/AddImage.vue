@@ -118,75 +118,49 @@ export default {
         setImage(image) {
             this.imageSrc = image;
         },
-        initializeDropzone() {
+        async checkScript() {
             const BASE_URL = this.$axios.defaults.baseURL;
             const token = this.user.token;
             const handleRequestError = this.handleRequestError;
             const setImage = this.setImage;
-            return new Promise((resolve, reject) => {
-                const interval = setInterval(() => {
-                    try {
-                        let myDropzone = new Dropzone("div#imageDropzone", {
-                            paramName: "file",
-                            maxFilesize: 2,
-                            maxFiles: 1,
-                            acceptedFiles: ".png,.jpg,.jpeg", 
-                            url: `${BASE_URL}${this.uploadUrl}`,
-                            headers:{"Authorization":'Bearer ' + token},
-                            addRemoveLinks: true,
-                        });
-
-                        myDropzone.on("addedfile", function(file) {
-                            setImage(null);
-                        });
-
-                        myDropzone.on("success", function(file) {
-                            setImage(file.dataURL);
-                        });
-
-                        myDropzone.on("error", function(file, errorMessage) {
-                            handleRequestError(errorMessage);
-                        });
-                        clearInterval(interval);
-                        resolve('loaded');
-                    } catch (e) {
-                        console.log(e.message);
-                        console.log('from error');
-                    }
-                }, 50);
+            let myDropzone = new Dropzone("div#imageDropzone", {
+                paramName: "file",
+                maxFilesize: 2,
+                maxFiles: 1,
+                acceptedFiles: ".png,.jpg,.jpeg", 
+                url: `${BASE_URL}${this.uploadUrl}`,
+                headers:{"Authorization":'Bearer ' + token},
+                addRemoveLinks: true,
             });
-        },
-        initializeSmartWizard() {
-            return new Promise((resolve, reject) => {
-                const interval = setInterval(() => {
-                    try {
-                        $('#smartwizard').smartWizard({
-                            autoAdjustHeight: false,
-                            backButtonSupport: false,
-                            useURLhash: false,
-                            showStepURLhash: false,
-                            toolbarSettings: {
-                                toolbarPosition: 'none',
-                            },
-                            anchorSettings: {
-                                anchorClickable: false,
-                                enableAllAnchors: false,
-                                markDoneStep: true,
-                                markAllPreviousStepsAsDone: true,
-                                enableAnchorOnDoneStep: true
-                            },
-                        });
-                        clearInterval(interval);
-                        resolve('loaded');
-                    } catch (e) {
-                        console.log('Still loading...');
-                    }
-                }, 50);
+
+            myDropzone.on("addedfile", function(file) {
+                setImage(null);
             });
-        },
-        async checkScript() {
-            await this.initializeDropzone();
-            await this.initializeSmartWizard();
+
+            myDropzone.on("success", function(file) {
+                setImage(file.dataURL);
+            });
+
+            myDropzone.on("error", function(file, errorMessage) {
+                handleRequestError(errorMessage);
+            });
+
+            $('#smartwizard').smartWizard({
+                autoAdjustHeight: false,
+                backButtonSupport: false,
+                useURLhash: false,
+                showStepURLhash: false,
+                toolbarSettings: {
+                    toolbarPosition: 'none',
+                },
+                anchorSettings: {
+                    anchorClickable: false,
+                    enableAllAnchors: false,
+                    markDoneStep: true,
+                    markAllPreviousStepsAsDone: true,
+                    enableAnchorOnDoneStep: true
+                },
+            });
             let changeStepState = this.changeStepState;
             $("#smartwizard").on("showStep", function(e, anchorObject, stepIndex, stepDirection, stepPosition) {
                 if (stepIndex == 0) {

@@ -57,13 +57,6 @@ export default {
                 { rel: 'stylesheet', href: '/css/vue-select.css' },
                 { rel: 'stylesheet', href: '/plugins/cropperjs/css/cropper.css' },
             ],
-            script: [
-                { src: '/plugins/bootstrap-tagsinput/bootstrap-tagsinput.js', body: true, ssr: false },
-                { src: '/js/init-tag-input.js', body: true, ssr: false },
-                { src: '/plugins/dropzone/dropzone.js', body: true, ssr: false, defer: true },
-                { src: '/plugins/smartWizard/js/jquery.smartWizard.min.js', body: true, ssr: false, defer: true },
-                { src: '/plugins/cropperjs/js/cropper.js', body: true, ssr: false },
-            ]
         }
     },
     computed: mapGetters({

@@ -24,7 +24,12 @@ export default {
       { src: '/plugins/slimscroll/jquery.slimscroll.min.js', body: true, ssr: false },
       { src: '/plugins/highlight/highlight.min.js', body: true, ssr: false },
       { src: '/js/app.js', body: true, ssr: false },
-      { src: '/js/avesta.js', body: true, ssr: false }
+      { src: '/js/avesta.js', body: true, ssr: false },
+      { src: '/plugins/bootstrap-tagsinput/bootstrap-tagsinput.js', body: true, ssr: false },
+      { src: '/js/init-tag-input.js', body: true, ssr: false },
+      { src: '/plugins/dropzone/dropzone.js', body: true, ssr: false, defer: true },
+      { src: '/plugins/smartWizard/js/jquery.smartWizard.min.js', body: true, ssr: false, defer: true },
+      { src: '/plugins/cropperjs/js/cropper.js', body: true, ssr: false },
     ]
   },
   /*
